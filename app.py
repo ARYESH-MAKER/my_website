@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 # ============================================================
 # PAGE CONFIGURATION
 # ============================================================
@@ -12,7 +11,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-
 # ============================================================
 # SESSION STATE
 # ============================================================
@@ -20,957 +18,779 @@ st.set_page_config(
 if "selected_game" not in st.session_state:
     st.session_state.selected_game = None
 
-if "dashboard_navigation" not in st.session_state:
-    st.session_state.dashboard_navigation = None
+if "page" not in st.session_state:
+    st.session_state.page = "🏠 Home"
 
 
 # ============================================================
 # CUSTOM CSS
 # ============================================================
 
-st.markdown("""
-<style>
-
-@import url(
-    'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap'
-);
-
-
-/* ============================================================
-   GLOBAL
-   ============================================================ */
-
-html, body, [class*="css"] {
-    font-family: "Rajdhani", sans-serif;
-}
-
-.stApp {
-    background:
-        radial-gradient(
-            circle at 50% 0%,
-            rgba(0, 85, 170, 0.16),
-            transparent 35%
-        ),
-        linear-gradient(
-            180deg,
-            #020711 0%,
-            #040a14 45%,
-            #02050b 100%
-        );
-
-    color: white;
-}
-
-.main .block-container {
-    padding-top: 2rem;
-    padding-bottom: 3rem;
-}
-
-
-/* ============================================================
-   STREAMLIT HEADER
-   ============================================================ */
-
-[data-testid="stHeader"] {
-    background: transparent !important;
-}
-
-[data-testid="stToolbar"] {
-    visibility: hidden !important;
-}
-
-[data-testid="stDecoration"] {
-    display: none !important;
-}
-
-
-/* ============================================================
-   SIDEBAR
-   ============================================================ */
-
-[data-testid="stSidebar"] {
-    background:
-        linear-gradient(
-            180deg,
-            #030914 0%,
-            #050b17 55%,
-            #02060d 100%
-        ) !important;
-
-    border-right: 1px solid rgba(0, 140, 255, 0.35);
-}
-
-[data-testid="stSidebar"] > div:first-child {
-    background: transparent !important;
-}
-
-.sidebar-logo {
-    font-family: "Orbitron", sans-serif;
-    font-size: 34px;
-    font-weight: 900;
-    letter-spacing: 5px;
-    color: white;
-    text-align: center;
-
-    text-shadow:
-        0 0 5px #ffffff,
-        0 0 12px #008cff,
-        0 0 25px #006eff,
-        0 0 45px rgba(0, 110, 255, 0.8);
-
-    margin-top: 10px;
-    margin-bottom: 2px;
-}
-
-.sidebar-subtitle {
-    font-family: "Orbitron", sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: #55c7ff;
-    text-align: center;
-
-    text-shadow:
-        0 0 8px rgba(0, 150, 255, 0.65);
-
-    margin-bottom: 20px;
-}
-
-[data-testid="stSidebar"] label {
-    font-family: "Orbitron", sans-serif !important;
-    color: white !important;
-    font-weight: 700 !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stRadio"] label {
-    font-family: "Rajdhani", sans-serif !important;
-    color: #dcecff !important;
-    font-size: 18px !important;
-    font-weight: 700 !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
-    color: #55c7ff !important;
-}
-
-[data-testid="stSidebar"] hr {
-    border-color: rgba(0, 140, 255, 0.25) !important;
-}
-
-
-/* ============================================================
-   SIDEBAR COLLAPSE BUTTON
-   ============================================================ */
-
-[data-testid="stSidebarCollapseButton"] {
-    z-index: 9999 !important;
-}
-
-[data-testid="stSidebarCollapseButton"] button {
-    color: #ffffff !important;
-    background-color: #075fc7 !important;
-    border: 2px solid #55c7ff !important;
-    border-radius: 8px !important;
-
-    width: 36px !important;
-    height: 36px !important;
-
-    box-shadow:
-        0 0 8px rgba(0, 140, 255, 0.7),
-        0 0 18px rgba(0, 140, 255, 0.35) !important;
-}
-
-[data-testid="stSidebarCollapseButton"] button svg {
-    color: #ffffff !important;
-    fill: #ffffff !important;
-    stroke: #ffffff !important;
-
-    width: 20px !important;
-    height: 20px !important;
-}
-
-[data-testid="stSidebarCollapseButton"] button:hover {
-    color: #ffffff !important;
-    background-color: #0877e8 !important;
-    border-color: #ffffff !important;
-
-    box-shadow:
-        0 0 10px rgba(85, 199, 255, 0.9),
-        0 0 24px rgba(0, 140, 255, 0.6) !important;
-}
-
-[data-testid="stSidebarCollapseButton"] button:hover svg {
-    color: #ffffff !important;
-    fill: #ffffff !important;
-    stroke: #ffffff !important;
-}
-
-
-/* ============================================================
-   SIDEBAR CATEGORY SELECTBOX
-   ============================================================ */
-
-[data-testid="stSidebar"] [data-testid="stSelectbox"] label {
-    color: white !important;
-    font-family: "Orbitron", sans-serif !important;
-    font-weight: 700 !important;
-}
-
-[data-testid="stSidebar"] [data-baseweb="select"] > div {
-    background-color: #08101f !important;
-    border: 1px solid #008cff !important;
-    border-radius: 8px !important;
-    min-height: 42px !important;
-}
-
-[data-testid="stSidebar"] [data-baseweb="select"] [role="button"] {
-    background-color: #08101f !important;
-    color: #55c7ff !important;
-}
-
-[data-testid="stSidebar"] [data-baseweb="select"] [role="button"] span {
-    color: #55c7ff !important;
-    -webkit-text-fill-color: #55c7ff !important;
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 16px !important;
-    font-weight: 700 !important;
-}
-
-[data-testid="stSidebar"] [data-baseweb="select"] svg {
-    fill: #55c7ff !important;
-    color: #55c7ff !important;
-}
-
-[data-baseweb="popover"] {
-    background-color: #080f1d !important;
-    border: 1px solid #008cff !important;
-}
-
-[data-baseweb="popover"] [role="option"] {
-    background-color: #080f1d !important;
-    color: #dcecff !important;
-
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 16px !important;
-}
-
-[data-baseweb="popover"] [role="option"]:hover {
-    background-color: #073b6d !important;
-    color: #55c7ff !important;
-}
-
-[data-baseweb="popover"] [role="option"][aria-selected="true"] {
-    background-color: #064c9b !important;
-    color: white !important;
-}
-
-
-/* ============================================================
-   MAIN CLARIX LOGO
-   ============================================================ */
-
-.clarix-logo {
-    font-family: "Orbitron", sans-serif;
-    font-size: 72px;
-    font-weight: 900;
-    letter-spacing: 9px;
-    color: white;
-
-    text-shadow:
-        0 0 4px #ffffff,
-        0 0 10px #008cff,
-        0 0 20px #008cff,
-        0 0 40px #006eff,
-        0 0 75px rgba(0, 110, 255, 0.85);
-
-    margin-bottom: 0;
-    line-height: 1.1;
-    text-align: center;
-}
-
-.clarix-tagline {
-    text-align: center;
-    color: #8fa9c4;
-
-    font-family: "Rajdhani", sans-serif;
-    font-size: 19px;
-    font-weight: 600;
-    letter-spacing: 4px;
-
-    margin-top: 8px;
-}
-
-.gaming-247 {
-    text-align: center;
-    color: #55c7ff;
-
-    font-family: "Orbitron", sans-serif;
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: 5px;
-
-    margin-top: 15px;
-
-    text-shadow:
-        0 0 7px #008cff,
-        0 0 18px rgba(0, 140, 255, 0.6);
-}
-
-
-/* ============================================================
-   STATS
-   ============================================================ */
-
-.stat-box {
-    background:
-        linear-gradient(
-            145deg,
-            rgba(8, 22, 42, 0.95),
-            rgba(3, 9, 18, 0.95)
-        );
-
-    border: 1px solid rgba(0, 140, 255, 0.35);
-    border-radius: 10px;
-
-    padding: 18px 10px;
-    text-align: center;
-
-    box-shadow:
-        inset 0 0 20px rgba(0, 100, 255, 0.04),
-        0 0 12px rgba(0, 80, 180, 0.10);
-}
-
-.stat-number {
-    color: #55c7ff;
-
-    font-family: "Orbitron", sans-serif;
-    font-size: 22px;
-    font-weight: 900;
-
-    text-shadow:
-        0 0 8px #008cff;
-}
-
-.stat-label {
-    color: #91a9c4;
-
-    font-family: "Rajdhani", sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-
-    margin-top: 5px;
-}
-
-
-/* ============================================================
-   DASHBOARD
-   ============================================================ */
-
-.home-dashboard-title {
-    color: #c77dff !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 32px !important;
-    font-weight: 900 !important;
-    letter-spacing: 4px;
-
-    text-shadow:
-        0 0 8px rgba(199, 125, 255, 0.9),
-        0 0 20px rgba(140, 70, 255, 0.55);
-
-    margin-top: 35px;
-    margin-bottom: 8px;
-}
-
-.home-dashboard-intro {
-    color: #91a9c4 !important;
-
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 17px !important;
-    letter-spacing: 1px;
-
-    margin-bottom: 25px;
-}
-
-.home-section-title {
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 23px !important;
-    font-weight: 900 !important;
-    letter-spacing: 2px !important;
-
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-.section-yellow {
-    color: #ffcc66 !important;
-
-    text-shadow:
-        0 0 7px #ffcc66,
-        0 0 18px rgba(255, 180, 50, 0.65) !important;
-}
-
-.section-pink {
-    color: #ff4fd8 !important;
-
-    text-shadow:
-        0 0 7px #ff4fd8,
-        0 0 18px rgba(255, 0, 180, 0.65) !important;
-}
-
-.section-orange {
-    color: #ff9d42 !important;
-
-    text-shadow:
-        0 0 7px #ff9d42,
-        0 0 18px rgba(255, 100, 20, 0.65) !important;
-}
-
-.section-green {
-    color: #66ffcc !important;
-
-    text-shadow:
-        0 0 7px #66ffcc,
-        0 0 18px rgba(0, 255, 180, 0.65) !important;
-}
-
-
-/* ============================================================
-   COMMAND CENTER
-   ============================================================ */
-
-.clarix-command-center {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-
-    color: #c77dff !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 22px !important;
-    font-weight: 800 !important;
-    letter-spacing: 2px !important;
-
-    text-shadow:
-        0 0 7px #c77dff,
-        0 0 18px rgba(199, 125, 255, 0.75) !important;
-
-    margin-top: 30px !important;
-    margin-bottom: 14px !important;
-}
-
-.home-command-text {
-    color: #55c7ff !important;
-
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    letter-spacing: 2px;
-
-    text-shadow:
-        0 0 7px rgba(0, 150, 255, 0.55);
-}
-
-
-/* ============================================================
-   DASHBOARD CARDS
-   ============================================================ */
-
-.dashboard-card {
-    background:
-        linear-gradient(
-            145deg,
-            rgba(7, 17, 31, 0.98),
-            rgba(3, 8, 16, 0.98)
-        );
-
-    border: 1px solid rgba(0, 130, 255, 0.28);
-    border-radius: 10px;
-
-    padding: 17px;
-    margin-bottom: 18px;
-
-    box-shadow:
-        inset 0 0 25px rgba(0, 80, 180, 0.03),
-        0 0 15px rgba(0, 60, 150, 0.08);
-}
-
-.dashboard-card p {
-    color: #9aadc2 !important;
-
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 16px !important;
-}
-
-
-/* ============================================================
-   BLUE BUTTONS
-   ============================================================ */
-
-.stButton > button {
-    width: 100%;
-
-    background:
-        linear-gradient(
+st.markdown(
+    """
+    <style>
+
+    /* ========================================================
+       GOOGLE FONTS
+       ======================================================== */
+
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+
+    /* ========================================================
+       MAIN BACKGROUND
+       ======================================================== */
+
+    .stApp {
+        background:
+            radial-gradient(
+                circle at 50% 0%,
+                rgba(0, 85, 170, 0.16),
+                transparent 35%
+            ),
+            linear-gradient(
+                180deg,
+                #020711 0%,
+                #040a14 45%,
+                #02050b 100%
+            );
+    }
+
+    .main .block-container {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+
+
+    /* ========================================================
+       GENERAL TEXT
+       ======================================================== */
+
+    p,
+    li {
+        font-family: "Rajdhani", sans-serif !important;
+        color: #c9d7e8;
+    }
+
+    .stMarkdown {
+        font-family: "Rajdhani", sans-serif;
+    }
+
+
+    /* ========================================================
+       SIDEBAR
+       ======================================================== */
+
+    [data-testid="stSidebar"] {
+        background:
+            linear-gradient(
+                180deg,
+                #030914 0%,
+                #050b17 55%,
+                #02060d 100%
+            ) !important;
+
+        border-right: 1px solid rgba(0, 140, 255, 0.35);
+    }
+
+    [data-testid="stSidebar"] > div:first-child {
+        background: transparent !important;
+    }
+
+    .sidebar-logo {
+        font-family: "Orbitron", sans-serif;
+        font-size: 34px;
+        font-weight: 900;
+        letter-spacing: 5px;
+        color: white;
+        text-align: center;
+        text-shadow:
+            0 0 5px #ffffff,
+            0 0 12px #008cff,
+            0 0 25px #006eff,
+            0 0 45px rgba(0, 110, 255, 0.8);
+        margin-top: 10px;
+        margin-bottom: 2px;
+    }
+
+    .sidebar-subtitle {
+        font-family: "Orbitron", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: #55c7ff;
+        text-align: center;
+        text-shadow:
+            0 0 8px rgba(0, 150, 255, 0.65);
+        margin-bottom: 20px;
+    }
+
+    [data-testid="stSidebar"] label {
+        font-family: "Orbitron", sans-serif !important;
+        color: white !important;
+        font-weight: 700 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stRadio"] label {
+        font-family: "Rajdhani", sans-serif !important;
+        color: #dcecff !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+        color: #55c7ff !important;
+    }
+
+    [data-testid="stSidebar"] hr {
+        border-color: rgba(0, 140, 255, 0.25) !important;
+    }
+
+
+    /* ========================================================
+       SIDEBAR COLLAPSE BUTTON
+       ======================================================== */
+
+    [data-testid="stSidebarCollapseButton"] {
+        z-index: 9999 !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] button {
+        color: #ffffff !important;
+        background-color: #000000 !important;
+        border: 2px solid #075fc7 !important;
+        border-radius: 8px !important;
+        width: 36px !important;
+        height: 36px !important;
+
+        box-shadow:
+            0 0 8px rgba(0, 100, 255, 0.45) !important;
+
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] button svg {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+        stroke: #ffffff !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] button:hover {
+        color: #ffffff !important;
+        background-color: #000000 !important;
+        border-color: #55c7ff !important;
+
+        box-shadow:
+            0 0 8px rgba(85, 199, 255, 0.9),
+            0 0 20px rgba(0, 140, 255, 0.7) !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] button:hover svg {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+        stroke: #ffffff !important;
+    }
+
+
+    /* ========================================================
+       SIDEBAR GAME CATEGORY
+       ======================================================== */
+
+    [data-testid="stSidebar"] [data-testid="stSelectbox"] label {
+        color: white !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-weight: 700 !important;
+    }
+
+    [data-testid="stSidebar"] [data-baseweb="select"] > div {
+        background-color: #08101f !important;
+        border: 1px solid #008cff !important;
+        border-radius: 8px !important;
+        min-height: 42px !important;
+    }
+
+    [data-testid="stSidebar"] [data-baseweb="select"] [role="button"] {
+        background-color: #08101f !important;
+        color: #55c7ff !important;
+    }
+
+    [data-testid="stSidebar"] [data-baseweb="select"]
+    [role="button"] span {
+        color: #55c7ff !important;
+        -webkit-text-fill-color: #55c7ff !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+    }
+
+    [data-testid="stSidebar"] [data-baseweb="select"] svg {
+        fill: #55c7ff !important;
+        color: #55c7ff !important;
+    }
+
+    [data-baseweb="popover"] {
+        background-color: #080f1d !important;
+        border: 1px solid #008cff !important;
+    }
+
+    [data-baseweb="popover"] [role="option"] {
+        background-color: #080f1d !important;
+        color: #dcecff !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 16px !important;
+    }
+
+    [data-baseweb="popover"] [role="option"]:hover {
+        background-color: #073b6d !important;
+        color: #55c7ff !important;
+    }
+
+    [data-baseweb="popover"] [role="option"][aria-selected="true"] {
+        background-color: #064c9b !important;
+        color: white !important;
+    }
+
+
+    /* ========================================================
+       CLARIX MAIN LOGO
+       ======================================================== */
+
+    .clarix-logo {
+        font-family: "Orbitron", sans-serif;
+        font-size: 72px;
+        font-weight: 900;
+        letter-spacing: 9px;
+        color: white;
+
+        text-shadow:
+            0 0 4px #ffffff,
+            0 0 10px #008cff,
+            0 0 20px #008cff,
+            0 0 40px #006eff,
+            0 0 75px rgba(0, 110, 255, 0.85);
+
+        margin-bottom: 0;
+        line-height: 1.1;
+        text-align: center;
+    }
+
+    .clarix-tagline {
+        text-align: center;
+        color: #91a9c4 !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 19px !important;
+        letter-spacing: 3px;
+        margin-top: 8px;
+    }
+
+    .gaming-247 {
+        text-align: center;
+        color: #55c7ff !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 20px !important;
+        font-weight: 800 !important;
+        letter-spacing: 4px;
+        text-shadow:
+            0 0 8px rgba(0, 150, 255, 0.7),
+            0 0 18px rgba(0, 100, 255, 0.4);
+        margin-top: 5px;
+    }
+
+
+    /* ========================================================
+       SEARCH BAR
+       ======================================================== */
+
+    .stTextInput input {
+        background-color: #080e1d !important;
+        color: white !important;
+        border: 1px solid #075fc7 !important;
+        border-radius: 8px !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 17px !important;
+        caret-color: #55c7ff !important;
+    }
+
+    .stTextInput input::placeholder {
+        color: #9da9b8 !important;
+        opacity: 1 !important;
+    }
+
+    .stTextInput input:focus {
+        border-color: #00aaff !important;
+        box-shadow: 0 0 0 1px #00aaff !important;
+    }
+
+    .stTextInput label {
+        color: white !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-weight: 600 !important;
+    }
+
+
+    /* ========================================================
+       BUTTONS
+       ======================================================== */
+
+    .stButton > button {
+        width: 100%;
+        background: linear-gradient(
             90deg,
             #064c9b,
             #075fc7
         ) !important;
 
-    color: white !important;
+        color: white !important;
+        border: 1px solid #008cff !important;
+        border-radius: 8px !important;
 
-    border: 1px solid #008cff !important;
-    border-radius: 8px !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        letter-spacing: 1px !important;
 
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    letter-spacing: 1px !important;
-}
+        transition: all 0.2s ease-in-out !important;
+    }
 
-.stButton > button:hover {
-    background:
-        linear-gradient(
+    .stButton > button:hover {
+        background: linear-gradient(
             90deg,
             #0877e8,
             #006eff
         ) !important;
 
-    color: white !important;
-    border-color: #55c7ff !important;
+        color: white !important;
+        border-color: #55c7ff !important;
 
-    box-shadow:
-        0 0 16px rgba(0, 140, 255, 0.40) !important;
-}
+        box-shadow:
+            0 0 16px rgba(0, 140, 255, 0.40) !important;
+    }
 
-.stButton > button:focus,
-.stButton > button:active {
-    color: white !important;
-
-    background:
-        linear-gradient(
+    .stButton > button:focus,
+    .stButton > button:active {
+        color: white !important;
+        background: linear-gradient(
             90deg,
             #075fc7,
             #064c9b
         ) !important;
 
-    border-color: #55c7ff !important;
-}
+        border-color: #55c7ff !important;
+    }
 
 
-/* ============================================================
-   LINK BUTTONS
-   ============================================================ */
+    /* ========================================================
+       LINK BUTTONS
+       ======================================================== */
 
-[data-testid="stLinkButton"] a {
-    width: 100%;
-
-    background:
-        linear-gradient(
+    [data-testid="stLinkButton"] a {
+        background: linear-gradient(
             90deg,
             #064c9b,
             #075fc7
         ) !important;
 
-    color: white !important;
+        color: white !important;
+        border: 1px solid #008cff !important;
+        border-radius: 8px !important;
 
-    border: 1px solid #008cff !important;
-    border-radius: 8px !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-weight: 700 !important;
 
-    font-family: "Orbitron", sans-serif !important;
-    font-weight: 700 !important;
+        text-decoration: none !important;
 
-    text-decoration: none !important;
-}
+        transition: all 0.2s ease-in-out !important;
+    }
 
-[data-testid="stLinkButton"] a:hover {
-    background:
-        linear-gradient(
+    [data-testid="stLinkButton"] a:hover {
+        background: linear-gradient(
             90deg,
             #0877e8,
             #006eff
         ) !important;
 
-    color: white !important;
-    border-color: #55c7ff !important;
-
-    box-shadow:
-        0 0 18px rgba(0, 140, 255, 0.40) !important;
-}
-
-[data-testid="stLinkButton"] a:visited {
-    color: white !important;
-}
-
-
-/* ============================================================
-   QUICK ACCESS GAME NAMES
-   ============================================================ */
-
-.quick-game-name {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 18px !important;
-    font-weight: 900 !important;
-    letter-spacing: 1px !important;
-
-    margin-bottom: 6px !important;
-}
-
-.quick-minecraft {
-    color: #66ffcc !important;
-
-    text-shadow:
-        0 0 7px #66ffcc,
-        0 0 15px rgba(102, 255, 204, 0.65) !important;
-}
-
-.quick-fortnite {
-    color: #ff4fd8 !important;
-
-    text-shadow:
-        0 0 7px #ff4fd8,
-        0 0 15px rgba(255, 79, 216, 0.65) !important;
-}
-
-.quick-gta {
-    color: #ff9d42 !important;
-
-    text-shadow:
-        0 0 7px #ff9d42,
-        0 0 15px rgba(255, 157, 66, 0.65) !important;
-}
-
-
-/* ============================================================
-   SEARCH BAR
-   ============================================================ */
-
-.stTextInput input {
-    background-color: #080e1d !important;
-    color: white !important;
-
-    border: 1px solid #075fc7 !important;
-    border-radius: 8px !important;
-
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 17px !important;
-
-    caret-color: #55c7ff !important;
-}
-
-.stTextInput input::placeholder {
-    color: #9da9b8 !important;
-    opacity: 1 !important;
-}
-
-.stTextInput input:focus {
-    border-color: #00aaff !important;
-
-    box-shadow:
-        0 0 0 1px #00aaff !important;
-}
-
-.stTextInput label {
-    color: white !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-weight: 600 !important;
-}
-
-
-/* ============================================================
-   GAME GENRE
-   ============================================================ */
-
-.game-genre {
-    display: inline-block !important;
-
-    color: #55c7ff !important;
-
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 17px !important;
-    font-weight: 700 !important;
-    letter-spacing: 2px !important;
-
-    background: rgba(0, 130, 255, 0.10) !important;
-
-    border: 1px solid rgba(0, 150, 255, 0.45) !important;
-    border-radius: 5px !important;
-
-    padding: 4px 11px !important;
-    margin-bottom: 13px !important;
-}
-
-
-/* ============================================================
-   PAGE TITLES
-   ============================================================ */
-
-.page-title-games {
-    color: #ffcc66 !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 32px !important;
-    font-weight: 900 !important;
-    letter-spacing: 3px;
-
-    text-shadow:
-        0 0 8px rgba(255, 204, 102, 0.8),
-        0 0 20px rgba(255, 160, 50, 0.45);
-}
-
-.page-title-leaderboard {
-    color: #ff4fd8 !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 32px !important;
-    font-weight: 900 !important;
-    letter-spacing: 3px;
-
-    text-shadow:
-        0 0 8px rgba(255, 79, 216, 0.85),
-        0 0 22px rgba(255, 0, 180, 0.45);
-}
-
-.page-title-news {
-    color: #ff9d42 !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 32px !important;
-    font-weight: 900 !important;
-    letter-spacing: 3px;
-
-    text-shadow:
-        0 0 8px rgba(255, 157, 66, 0.85),
-        0 0 22px rgba(255, 100, 20, 0.45);
-}
-
-.page-title-profiles {
-    color: #b86cff !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 32px !important;
-    font-weight: 900 !important;
-    letter-spacing: 3px;
-
-    text-shadow:
-        0 0 8px rgba(184, 108, 255, 0.85),
-        0 0 22px rgba(130, 50, 255, 0.45);
-}
-
-
-/* ============================================================
-   GAME CARDS
-   ============================================================ */
-
-.game-card {
-    background:
-        linear-gradient(
-            145deg,
-            rgba(7, 18, 33, 0.98),
-            rgba(3, 8, 16, 0.98)
-        );
-
-    border: 1px solid rgba(0, 140, 255, 0.35);
-    border-radius: 10px;
-
-    padding: 20px;
-    margin-bottom: 18px;
-
-    box-shadow:
-        0 0 16px rgba(0, 90, 180, 0.08);
-}
-
-.game-card-title {
-    color: white !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 24px !important;
-    font-weight: 900 !important;
-    letter-spacing: 1px !important;
-
-    margin-bottom: 5px;
-}
-
-.game-card-description {
-    color: #9aadc2 !important;
-
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 16px !important;
-    line-height: 1.5;
-}
-
-.detail-label {
-    color: #55c7ff !important;
-
-    font-family: "Orbitron", sans-serif !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    letter-spacing: 1px !important;
-}
-
-.detail-value {
-    color: white !important;
-
-    font-family: "Rajdhani", sans-serif !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-}
-
-
-/* ============================================================
-   LEADERBOARD
-   ============================================================ */
-
-.leader-row {
-    background:
-        linear-gradient(
+        color: white !important;
+        border-color: #55c7ff !important;
+
+        box-shadow:
+            0 0 18px rgba(0, 140, 255, 0.40) !important;
+    }
+
+    [data-testid="stLinkButton"] a:visited {
+        color: white !important;
+    }
+
+
+    /* ========================================================
+       HOME STATS
+       ======================================================== */
+
+    .stat-title {
+        color: #55c7ff !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        letter-spacing: 2px;
+    }
+
+    .stat-value {
+        color: white !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 19px !important;
+        font-weight: 700 !important;
+    }
+
+
+    /* ========================================================
+       HOME DASHBOARD
+       ======================================================== */
+
+    .home-dashboard-title {
+        color: #c77dff !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 32px !important;
+        font-weight: 900 !important;
+        letter-spacing: 4px;
+
+        text-shadow:
+            0 0 8px rgba(199, 125, 255, 0.9),
+            0 0 20px rgba(140, 70, 255, 0.55);
+
+        margin-top: 35px;
+        margin-bottom: 8px;
+    }
+
+    .home-dashboard-intro {
+        color: #55c7ff !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 17px !important;
+        letter-spacing: 1px;
+        margin-bottom: 25px;
+    }
+
+    .home-section-tag {
+        color: #91a9c4 !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        letter-spacing: 3px;
+        margin-bottom: 8px;
+    }
+
+    .home-section-title {
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 23px !important;
+        font-weight: 900 !important;
+        letter-spacing: 2px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .library-title {
+        color: #ffcc66 !important;
+        text-shadow:
+            0 0 8px rgba(255, 190, 80, 0.55);
+    }
+
+    .competitive-title {
+        color: #ff4fd8 !important;
+        text-shadow:
+            0 0 8px rgba(255, 79, 216, 0.55);
+    }
+
+    .news-section-title {
+        color: #ff9d42 !important;
+        text-shadow:
+            0 0 8px rgba(255, 157, 66, 0.55);
+    }
+
+    .profiles-section-title {
+        color: #55e69b !important;
+        text-shadow:
+            0 0 8px rgba(85, 230, 155, 0.55);
+    }
+
+    .home-feature-text {
+        color: #b9cbe0 !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 17px !important;
+        line-height: 1.5;
+    }
+
+    .home-divider {
+        height: 1px;
+        background: linear-gradient(
             90deg,
-            rgba(10, 19, 35, 0.95),
-            rgba(4, 10, 19, 0.95)
+            transparent,
+            #075fc7,
+            #55c7ff,
+            #075fc7,
+            transparent
         );
+        margin: 25px 0;
+    }
 
-    border: 1px solid rgba(255, 79, 216, 0.20);
-    border-radius: 8px;
+    .command-center-title {
+        color: #55c7ff !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 25px !important;
+        font-weight: 900 !important;
+        letter-spacing: 3px;
 
-    padding: 13px 18px;
-    margin-bottom: 8px;
-}
+        text-shadow:
+            0 0 8px rgba(0, 150, 255, 0.7);
+    }
 
-.leader-rank {
-    color: #ff4fd8;
+    .quick-access-title {
+        color: #55e69b !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 25px !important;
+        font-weight: 900 !important;
+        letter-spacing: 3px;
 
-    font-family: "Orbitron", sans-serif;
-    font-size: 18px;
-    font-weight: 900;
-}
+        text-shadow:
+            0 0 8px rgba(85, 230, 155, 0.55);
+    }
 
-.leader-name {
-    color: white;
+    .home-command-text {
+        color: #c77dff !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        letter-spacing: 2px;
 
-    font-family: "Rajdhani", sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-
-/* ============================================================
-   NEWS
-   ============================================================ */
-
-.news-card {
-    background:
-        linear-gradient(
-            145deg,
-            rgba(20, 15, 8, 0.98),
-            rgba(8, 8, 7, 0.98)
-        );
-
-    border: 1px solid rgba(255, 157, 66, 0.35);
-    border-radius: 10px;
-
-    padding: 20px;
-    margin-bottom: 18px;
-}
-
-.news-game {
-    color: #ff9d42;
-
-    font-family: "Orbitron", sans-serif;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 2px;
-}
-
-.news-title {
-    color: white;
-
-    font-family: "Orbitron", sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-
-    margin-top: 7px;
-}
-
-.news-date {
-    color: #9da9b8;
-
-    font-family: "Rajdhani", sans-serif;
-    font-size: 14px;
-
-    margin-top: 5px;
-}
-
-.news-description {
-    color: #b4bfcc;
-
-    font-family: "Rajdhani", sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-
-    margin-top: 10px;
-}
+        text-shadow:
+            0 0 7px rgba(199, 125, 255, 0.55);
+    }
 
 
-/* ============================================================
-   PROFILE
-   ============================================================ */
+    /* ========================================================
+       PAGE HEADINGS
+       ======================================================== */
 
-.profile-card {
-    background:
-        linear-gradient(
-            145deg,
-            rgba(14, 8, 25, 0.98),
-            rgba(5, 6, 13, 0.98)
-        );
+    .page-title-games {
+        color: #ffcc66 !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 32px !important;
+        font-weight: 900 !important;
+        letter-spacing: 3px;
 
-    border: 1px solid rgba(184, 108, 255, 0.30);
-    border-radius: 10px;
+        text-shadow:
+            0 0 8px rgba(255, 204, 102, 0.8),
+            0 0 20px rgba(255, 160, 50, 0.45);
+    }
 
-    padding: 22px;
-    margin-bottom: 18px;
-}
+    .page-title-leaderboard {
+        color: #ff4fd8 !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 32px !important;
+        font-weight: 900 !important;
+        letter-spacing: 3px;
 
-.profile-name {
-    color: #b86cff;
+        text-shadow:
+            0 0 8px rgba(255, 79, 216, 0.85),
+            0 0 22px rgba(255, 0, 180, 0.45);
+    }
 
-    font-family: "Orbitron", sans-serif;
-    font-size: 22px;
-    font-weight: 900;
+    .page-title-news {
+        color: #ff9d42 !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 32px !important;
+        font-weight: 900 !important;
+        letter-spacing: 3px;
 
-    text-shadow:
-        0 0 10px rgba(184, 108, 255, 0.65);
-}
+        text-shadow:
+            0 0 8px rgba(255, 157, 66, 0.85),
+            0 0 22px rgba(255, 100, 20, 0.45);
+    }
 
-.profile-info {
-    color: #aab8c8;
+    .page-title-profiles {
+        color: #55e69b !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 32px !important;
+        font-weight: 900 !important;
+        letter-spacing: 3px;
 
-    font-family: "Rajdhani", sans-serif;
-    font-size: 16px;
+        text-shadow:
+            0 0 8px rgba(85, 230, 155, 0.75),
+            0 0 22px rgba(0, 200, 120, 0.35);
+    }
 
-    margin-top: 8px;
-}
+
+    /* ========================================================
+       GAME GENRE
+       ======================================================== */
+
+    .game-genre {
+        display: inline-block;
+
+        font-family: "Rajdhani", sans-serif;
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 2px;
+
+        color: #55c7ff !important;
+
+        background: rgba(0, 130, 255, 0.10);
+        border: 1px solid rgba(0, 150, 255, 0.45);
+        border-radius: 5px;
+
+        padding: 4px 11px;
+        margin-bottom: 13px;
+
+        text-shadow:
+            0 0 8px rgba(0, 150, 255, 0.55);
+    }
 
 
-/* ============================================================
-   DIVIDER
-   ============================================================ */
+    /* ========================================================
+       GAME DETAILS
+       ======================================================== */
 
-hr {
-    border-color: rgba(0, 140, 255, 0.20) !important;
-}
+    .game-detail-title {
+        color: #55c7ff !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 25px !important;
+        font-weight: 900 !important;
+        letter-spacing: 2px;
 
-</style>
-""", unsafe_allow_html=True)
+        text-shadow:
+            0 0 8px rgba(0, 150, 255, 0.65);
+    }
+
+    .game-detail-label {
+        color: #ffcc66 !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        letter-spacing: 1px;
+    }
+
+    .game-detail-value {
+        color: #c9d7e8 !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 17px !important;
+        font-weight: 600 !important;
+    }
+
+
+    /* ========================================================
+       LEADERBOARD
+       ======================================================== */
+
+    .leaderboard-name {
+        color: #55c7ff !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 24px !important;
+        font-weight: 800 !important;
+        letter-spacing: 1px;
+
+        text-shadow:
+            0 0 6px rgba(0, 150, 255, 0.6);
+    }
+
+    .leaderboard-rank {
+        color: #ffcc66 !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 25px !important;
+        font-weight: 900 !important;
+
+        text-shadow:
+            0 0 8px rgba(255, 190, 80, 0.5);
+    }
+
+    .leaderboard-row {
+        padding: 8px 0;
+    }
+
+
+    /* ========================================================
+       NEWS
+       ======================================================== */
+
+    .news-game {
+        color: #55c7ff !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        letter-spacing: 2px;
+    }
+
+    .news-title {
+        color: #ff9d42 !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 22px !important;
+        font-weight: 800 !important;
+        letter-spacing: 1px;
+    }
+
+    .news-date {
+        color: #c77dff !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+    }
+
+    .news-description {
+        color: #b9cbe0 !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 17px !important;
+        line-height: 1.5;
+    }
+
+
+    /* ========================================================
+       PLAYER PROFILES
+       ======================================================== */
+
+    .profile-name {
+        color: #55e69b !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 23px !important;
+        font-weight: 900 !important;
+        letter-spacing: 1px;
+
+        text-shadow:
+            0 0 8px rgba(85, 230, 155, 0.65);
+    }
+
+    .profile-rank {
+        color: #ff4fd8 !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 17px !important;
+        font-weight: 700 !important;
+    }
+
+
+    /* ========================================================
+       QUICK ACCESS
+       ======================================================== */
+
+    .quick-title {
+        color: #55c7ff !important;
+        font-family: "Orbitron", sans-serif !important;
+        font-size: 18px !important;
+        font-weight: 900 !important;
+        letter-spacing: 1px;
+    }
+
+    .quick-genre {
+        color: #c77dff !important;
+        font-family: "Rajdhani", sans-serif !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
-# GAME DATA
+# DATA
 # ============================================================
 
 games = [
@@ -1037,10 +857,6 @@ games = [
 ]
 
 
-# ============================================================
-# LEADERBOARD DATA
-# ============================================================
-
 leaderboard = [
     ("1", "FadingLyfe"),
     ("2", "ᴮᴼᴳPookie Poke"),
@@ -1054,10 +870,6 @@ leaderboard = [
     ("10", "iJerra.TV")
 ]
 
-
-# ============================================================
-# NEWS DATA
-# ============================================================
 
 news = [
     {
@@ -1095,6 +907,124 @@ news = [
 
 
 # ============================================================
+# PAGE NAVIGATION HELPER
+# ============================================================
+
+def go_to_page(page):
+    st.session_state.page = page
+    st.session_state.selected_game = None
+
+
+# ============================================================
+# GAME DETAILS
+# ============================================================
+
+def display_game_details(game):
+
+    st.markdown(
+        f'<div class="game-detail-title">{game["name"]}</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f'<div class="game-genre">{game["genre"]}</div>',
+        unsafe_allow_html=True
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.markdown(
+            '<div class="game-detail-label">DEVELOPER</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f'<div class="game-detail-value">'
+            f'{game["developer"]}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<br><div class="game-detail-label">RELEASE</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f'<div class="game-detail-value">'
+            f'{game["release"]}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<br><div class="game-detail-label">PLAYERS</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f'<div class="game-detail-value">'
+            f'{game["players"]}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
+    with col2:
+
+        st.markdown(
+            '<div class="game-detail-label">PLATFORMS</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f'<div class="game-detail-value">'
+            f'{game["platforms"]}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="game-detail-label">ABOUT THE GAME</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f'<div class="game-detail-value">'
+        f'{game["description"]}'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="game-detail-label">GAMEPLAY FEATURES</div>',
+        unsafe_allow_html=True
+    )
+
+    for feature in game["features"]:
+
+        st.markdown(
+            f'<div class="game-detail-value">'
+            f'• {feature}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    st.link_button(
+        "OFFICIAL WEBSITE",
+        game["official"],
+        use_container_width=True
+    )
+
+
+# ============================================================
 # SIDEBAR
 # ============================================================
 
@@ -1110,117 +1040,49 @@ with st.sidebar:
         unsafe_allow_html=True
     )
 
+    page_options = [
+        "🏠 Home",
+        "🎮 Games",
+        "🏆 Leaderboard",
+        "📰 Gaming News",
+        "👤 Player Profiles"
+    ]
+
+    current_index = page_options.index(st.session_state.page)
+
     page_name = st.radio(
         "NAVIGATION",
-        [
-            "🏠 Home",
-            "🎮 Games",
-            "🏆 Leaderboard",
-            "📰 Gaming News",
-            "👤 Player Profiles"
-        ],
-        label_visibility="visible"
+        page_options,
+        index=current_index,
+        label_visibility="collapsed"
     )
+
+    if page_name != st.session_state.page:
+        st.session_state.page = page_name
+        st.session_state.selected_game = None
+        st.rerun()
 
     st.markdown("---")
 
+    st.markdown("### GAME CATEGORY")
+
     genre_filter = st.selectbox(
-        "GAME CATEGORY",
+        "Select Genre",
         [
             "All",
             "Sandbox / Adventure",
             "Battle Royale / Action",
             "Action / Open World"
-        ]
+        ],
+        label_visibility="collapsed"
     )
 
 
 # ============================================================
-# CURRENT PAGE
+# HOME
 # ============================================================
 
-page = page_name
-
-
-# ============================================================
-# GAME DETAIL FUNCTION
-# ============================================================
-
-def display_game_details(game):
-
-    st.markdown(
-        f'<div class="game-card-title">{game["name"].upper()}</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        f'<div class="game-genre">{game["genre"]}</div>',
-        unsafe_allow_html=True
-    )
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        st.markdown(
-            f"""
-            <div>
-                <div class="detail-label">DEVELOPER</div>
-                <div class="detail-value">{game["developer"]}</div>
-            </div>
-
-            <br>
-
-            <div>
-                <div class="detail-label">RELEASE</div>
-                <div class="detail-value">{game["release"]}</div>
-            </div>
-
-            <br>
-
-            <div>
-                <div class="detail-label">PLAYERS</div>
-                <div class="detail-value">{game["players"]}</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    with col2:
-
-        st.markdown(
-            f"""
-            <div>
-                <div class="detail-label">PLATFORMS</div>
-                <div class="detail-value">{game["platforms"]}</div>
-            </div>
-
-            <br>
-
-            <div>
-                <div class="detail-label">FEATURES</div>
-                <div class="detail-value">
-                    {" • ".join(game["features"])}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    st.link_button(
-        "VISIT OFFICIAL WEBSITE",
-        game["official"],
-        use_container_width=True
-    )
-
-
-# ============================================================
-# HOME PAGE
-# ============================================================
-
-def show_home():
+if st.session_state.page == "🏠 Home":
 
     st.markdown(
         '<div class="clarix-logo">CLARIX</div>',
@@ -1229,7 +1091,7 @@ def show_home():
 
     st.markdown(
         '<div class="clarix-tagline">'
-        'THE ULTIMATE GAMING HUB'
+        'YOUR COMMAND CENTER FOR THE GAMING WORLD'
         '</div>',
         unsafe_allow_html=True
     )
@@ -1239,7 +1101,7 @@ def show_home():
         unsafe_allow_html=True
     )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.write("")
 
     # --------------------------------------------------------
     # STATS
@@ -1248,51 +1110,56 @@ def show_home():
     stat1, stat2, stat3, stat4 = st.columns(4)
 
     with stat1:
+
         st.markdown(
-            """
-            <div class="stat-box">
-                <div class="stat-number">3</div>
-                <div class="stat-label">FEATURED GAMES</div>
-            </div>
-            """,
+            '<div class="stat-title">FEATURED GAMES</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<div class="stat-value">3</div>',
             unsafe_allow_html=True
         )
 
     with stat2:
+
         st.markdown(
-            """
-            <div class="stat-box">
-                <div class="stat-number">REAL</div>
-                <div class="stat-label">GAME DATA</div>
-            </div>
-            """,
+            '<div class="stat-title">GAME DATA</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<div class="stat-value">REAL</div>',
             unsafe_allow_html=True
         )
 
     with stat3:
+
         st.markdown(
-            """
-            <div class="stat-box">
-                <div class="stat-number">LIVE</div>
-                <div class="stat-label">GAMING NEWS</div>
-            </div>
-            """,
+            '<div class="stat-title">GAMING NEWS</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<div class="stat-value">LIVE</div>',
             unsafe_allow_html=True
         )
 
     with stat4:
+
         st.markdown(
-            """
-            <div class="stat-box">
-                <div class="stat-number">24 / 7</div>
-                <div class="stat-label">GAMING HUB</div>
-            </div>
-            """,
+            '<div class="stat-title">GAMING HUB</div>',
             unsafe_allow_html=True
         )
 
+        st.markdown(
+            '<div class="stat-value">24 / 7</div>',
+            unsafe_allow_html=True
+        )
+
+
     # --------------------------------------------------------
-    # DASHBOARD
+    # GAMING DASHBOARD
     # --------------------------------------------------------
 
     st.markdown(
@@ -1304,142 +1171,179 @@ def show_home():
 
     st.markdown(
         '<div class="home-dashboard-intro">'
-        'Your central command center for gaming, competition, '
-        'news and player discovery.'
+        'YOUR COMMAND CENTER FOR THE GAMING WORLD'
         '</div>',
         unsafe_allow_html=True
     )
+
 
     # --------------------------------------------------------
     # GAME LIBRARY
     # --------------------------------------------------------
 
     st.markdown(
-        '<div class="home-section-title section-yellow">'
+        '<div class="home-section-tag">01 / EXPLORE</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="home-section-title library-title">'
         'GAME LIBRARY'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        """
-        <div class="dashboard-card">
-            <p>
-                Explore featured games, discover their details,
-                platforms, genres and gameplay features.
-            </p>
-        </div>
-        """,
+        '<div class="home-feature-text">'
+        'Discover detailed information about Minecraft, Fortnite '
+        'and Grand Theft Auto V. Explore genres, developers, '
+        'platforms, gameplay and features.'
+        '</div>',
         unsafe_allow_html=True
     )
 
+    st.write("")
+
     if st.button(
         "EXPLORE GAMES",
-        key="dashboard_games",
+        key="home_explore_games",
         use_container_width=True
     ):
-        st.session_state.dashboard_navigation = "🎮 Games"
+        go_to_page("🎮 Games")
         st.rerun()
+
+    st.markdown(
+        '<div class="home-divider"></div>',
+        unsafe_allow_html=True
+    )
+
 
     # --------------------------------------------------------
     # COMPETITIVE GAMING
     # --------------------------------------------------------
 
     st.markdown(
-        '<div class="home-section-title section-pink">'
+        '<div class="home-section-tag">02 / COMPETE</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="home-section-title competitive-title">'
         'COMPETITIVE GAMING'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        """
-        <div class="dashboard-card">
-            <p>
-                Check the CLARIX leaderboard and discover
-                competitive players from the gaming community.
-            </p>
-        </div>
-        """,
+        '<div class="home-feature-text">'
+        'Track competitive players, explore leaderboard positions '
+        'and keep an eye on the competitive gaming scene.'
+        '</div>',
         unsafe_allow_html=True
     )
 
+    st.write("")
+
     if st.button(
         "VIEW LEADERBOARD",
-        key="dashboard_leaderboard",
+        key="home_view_leaderboard",
         use_container_width=True
     ):
-        st.session_state.dashboard_navigation = "🏆 Leaderboard"
+        go_to_page("🏆 Leaderboard")
         st.rerun()
+
+    st.markdown(
+        '<div class="home-divider"></div>',
+        unsafe_allow_html=True
+    )
+
 
     # --------------------------------------------------------
     # GAMING NEWS
     # --------------------------------------------------------
 
     st.markdown(
-        '<div class="home-section-title section-orange">'
+        '<div class="home-section-tag">03 / DISCOVER</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="home-section-title news-section-title">'
         'GAMING NEWS'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        """
-        <div class="dashboard-card">
-            <p>
-                Stay updated with gaming announcements,
-                seasonal content and important updates.
-            </p>
-        </div>
-        """,
+        '<div class="home-feature-text">'
+        'Stay connected with announcements, seasonal events, '
+        'updates and important developments from your favorite games.'
+        '</div>',
         unsafe_allow_html=True
     )
 
+    st.write("")
+
     if st.button(
-        "READ GAMING NEWS",
-        key="dashboard_news",
+        "OPEN GAMING NEWS",
+        key="home_news_button",
         use_container_width=True
     ):
-        st.session_state.dashboard_navigation = "📰 Gaming News"
+        go_to_page("📰 Gaming News")
         st.rerun()
+
+    st.markdown(
+        '<div class="home-divider"></div>',
+        unsafe_allow_html=True
+    )
+
 
     # --------------------------------------------------------
     # PLAYER PROFILES
     # --------------------------------------------------------
 
     st.markdown(
-        '<div class="home-section-title section-green">'
+        '<div class="home-section-tag">04 / CONNECT</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="home-section-title profiles-section-title">'
         'PLAYER PROFILES'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        """
-        <div class="dashboard-card">
-            <p>
-                Explore the player community and discover
-                gaming identities across CLARIX.
-            </p>
-        </div>
-        """,
+        '<div class="home-feature-text">'
+        'Explore competitive player names and leaderboard positions '
+        'displayed through the CLARIX gaming hub.'
+        '</div>',
         unsafe_allow_html=True
     )
 
+    st.write("")
+
     if st.button(
-        "EXPLORE PROFILES",
-        key="dashboard_profiles",
+        "VIEW PLAYER PROFILES",
+        key="home_profiles_button",
         use_container_width=True
     ):
-        st.session_state.dashboard_navigation = "👤 Player Profiles"
+        go_to_page("👤 Player Profiles")
         st.rerun()
+
+    st.markdown(
+        '<div class="home-divider"></div>',
+        unsafe_allow_html=True
+    )
+
 
     # --------------------------------------------------------
     # COMMAND CENTER
     # --------------------------------------------------------
 
     st.markdown(
-        '<div class="clarix-command-center">'
+        '<div class="command-center-title">'
         'CLARIX COMMAND CENTER'
         '</div>',
         unsafe_allow_html=True
@@ -1452,94 +1356,95 @@ def show_home():
         unsafe_allow_html=True
     )
 
+    st.write(
+        "Everything you need to explore the gaming world, "
+        "all in one place."
+    )
+
+
     # --------------------------------------------------------
     # QUICK ACCESS
     # --------------------------------------------------------
 
     st.markdown(
-        '<div class="home-section-title section-green">'
+        '<div class="quick-access-title">'
         'QUICK ACCESS'
         '</div>',
         unsafe_allow_html=True
     )
 
-    col1, col2, col3 = st.columns(3)
+    st.write("")
 
-    with col1:
+    quick1, quick2, quick3 = st.columns(3)
+
+    with quick1:
 
         st.markdown(
-            '<div class="dashboard-card">',
+            '<div class="quick-title">MINECRAFT</div>',
             unsafe_allow_html=True
         )
 
         st.markdown(
-            '<div class="quick-game-name quick-minecraft">'
-            'MINECRAFT'
+            '<div class="quick-genre">'
+            'SANDBOX / ADVENTURE'
             '</div>',
             unsafe_allow_html=True
         )
 
+        st.link_button(
+            "OFFICIAL WEBSITE",
+            "https://www.minecraft.net/",
+            use_container_width=True
+        )
+
+    with quick2:
+
         st.markdown(
-            '<div class="game-card-description">'
-            'Sandbox / Adventure'
+            '<div class="quick-title">FORTNITE</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<div class="quick-genre">'
+            'BATTLE ROYALE / ACTION'
             '</div>',
             unsafe_allow_html=True
         )
 
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col2:
-
-        st.markdown(
-            '<div class="dashboard-card">',
-            unsafe_allow_html=True
+        st.link_button(
+            "OFFICIAL WEBSITE",
+            "https://www.fortnite.com/",
+            use_container_width=True
         )
 
-        st.markdown(
-            '<div class="quick-game-name quick-fortnite">'
-            'FORTNITE'
-            '</div>',
-            unsafe_allow_html=True
-        )
+    with quick3:
 
         st.markdown(
-            '<div class="game-card-description">'
-            'Battle Royale / Action'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col3:
-
-        st.markdown(
-            '<div class="dashboard-card">',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            '<div class="quick-game-name quick-gta">'
+            '<div class="quick-title">'
             'GRAND THEFT AUTO V'
             '</div>',
             unsafe_allow_html=True
         )
 
         st.markdown(
-            '<div class="game-card-description">'
-            'Action / Open World'
+            '<div class="quick-genre">'
+            'ACTION / OPEN WORLD'
             '</div>',
             unsafe_allow_html=True
         )
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.link_button(
+            "OFFICIAL WEBSITE",
+            "https://www.rockstargames.com/gta-v",
+            use_container_width=True
+        )
 
 
 # ============================================================
-# GAMES PAGE
+# GAMES
 # ============================================================
 
-def show_games():
+elif st.session_state.page == "🎮 Games":
 
     st.markdown(
         '<div class="page-title-games">'
@@ -1549,162 +1454,169 @@ def show_games():
     )
 
     st.markdown(
-        '<div class="game-card-description">'
-        'Explore the featured games available on CLARIX.'
+        '<div style="color:#55c7ff; '
+        'font-family:Rajdhani; '
+        'font-size:17px; '
+        'margin-top:5px;">'
+        'EXPLORE YOUR FAVORITE GAMES'
         '</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.write("")
 
-    search = st.text_input(
+    search_query = st.text_input(
         "SEARCH GAMES",
-        placeholder="Search for a game..."
+        placeholder="Search for a game...",
+        key="game_search"
     )
 
-    filtered_games = games.copy()
+    filtered_games = []
 
-    if genre_filter != "All":
+    for game in games:
 
-        filtered_games = [
-            game
-            for game in filtered_games
-            if game["genre"] == genre_filter
-        ]
+        if search_query.strip():
 
-    if search:
-
-        search_text = search.lower()
-
-        filtered_games = [
-            game
-            for game in filtered_games
-            if (
-                search_text in game["name"].lower()
-                or search_text in game["genre"].lower()
+            matches_search = (
+                search_query.strip().lower()
+                in game["name"].lower()
             )
-        ]
+
+        else:
+
+            matches_search = True
+
+        matches_genre = (
+            genre_filter == "All"
+            or genre_filter == game["genre"]
+        )
+
+        if matches_search and matches_genre:
+            filtered_games.append(game)
+
 
     if not filtered_games:
 
-        st.markdown(
-            """
-            <div class="dashboard-card">
-                <div class="game-card-description">
-                    No games found.
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.warning(
+            "No games found matching your search."
         )
 
-        return
+    else:
 
-    for game in filtered_games:
-
-        st.markdown(
-            '<div class="game-card">',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            f'<div class="game-card-title">'
-            f'{game["name"]}'
-            f'</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            f'<div class="game-genre">'
-            f'{game["genre"]}'
-            f'</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            f'<div class="game-card-description">'
-            f'{game["description"]}'
-            f'</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            "</div>",
-            unsafe_allow_html=True
-        )
-
-        if st.button(
-            "VIEW DETAILS",
-            key=f"details_{game['name']}",
-            use_container_width=True
-        ):
-
-            if st.session_state.selected_game == game["name"]:
-
-                st.session_state.selected_game = None
-
-            else:
-
-                st.session_state.selected_game = game["name"]
-
-            st.rerun()
-
-        if st.session_state.selected_game == game["name"]:
+        for game in filtered_games:
 
             st.markdown(
-                '<div class="dashboard-card">',
+                f'<div class="game-detail-title">'
+                f'{game["name"]}'
+                f'</div>',
                 unsafe_allow_html=True
             )
 
-            display_game_details(game)
+            st.markdown(
+                f'<div class="game-genre">'
+                f'{game["genre"]}'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            if st.button(
+                "VIEW DETAILS"
+                if st.session_state.selected_game != game["name"]
+                else "HIDE DETAILS",
+                key=f"game_details_{game['name']}",
+                use_container_width=True
+            ):
+
+                if (
+                    st.session_state.selected_game
+                    == game["name"]
+                ):
+                    st.session_state.selected_game = None
+                else:
+                    st.session_state.selected_game = game["name"]
+
+                st.rerun()
+
+
+            if (
+                st.session_state.selected_game
+                == game["name"]
+            ):
+
+                display_game_details(game)
+
 
             st.markdown(
-                "</div>",
+                '<div class="home-divider"></div>',
                 unsafe_allow_html=True
             )
 
 
 # ============================================================
-# LEADERBOARD PAGE
+# LEADERBOARD
 # ============================================================
 
-def show_leaderboard():
+elif st.session_state.page == "🏆 Leaderboard":
 
     st.markdown(
         '<div class="page-title-leaderboard">'
-        'LEADERBOARD'
+        'FORTNITE RANKED LEADERBOARD'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        '<div class="game-card-description">'
-        'Top players in the CLARIX competitive gaming community.'
+        '<div style="color:#8ed8ff; '
+        'font-family:Rajdhani; '
+        'font-size:17px; '
+        'margin-top:5px;">'
+        'TOP COMPETITIVE PLAYERS'
         '</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.write("")
 
-    for rank, name in leaderboard:
+    for rank, player in leaderboard:
 
         st.markdown(
-            f"""
-            <div class="leader-row">
-                <span class="leader-rank">#{rank}</span>
-                &nbsp;&nbsp;&nbsp;
-                <span class="leader-name">{name}</span>
-            </div>
-            """,
+            '<div class="leaderboard-row">',
             unsafe_allow_html=True
         )
 
+        col1, col2 = st.columns([1, 7])
+
+        with col1:
+
+            st.markdown(
+                f'<div class="leaderboard-rank">'
+                f'#{rank}'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+        with col2:
+
+            st.markdown(
+                f'<div class="leaderboard-name">'
+                f'{player}'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+        st.markdown(
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown("---")
+
 
 # ============================================================
-# GAMING NEWS PAGE
+# GAMING NEWS
 # ============================================================
 
-def show_news():
+elif st.session_state.page == "📰 Gaming News":
 
     st.markdown(
         '<div class="page-title-news">'
@@ -1714,20 +1626,18 @@ def show_news():
     )
 
     st.markdown(
-        '<div class="game-card-description">'
-        'Latest gaming announcements and updates.'
+        '<div style="color:#c77dff; '
+        'font-family:Rajdhani; '
+        'font-size:17px; '
+        'margin-top:5px;">'
+        'ANNOUNCEMENTS • EVENTS • UPDATES'
         '</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.write("")
 
     for item in news:
-
-        st.markdown(
-            '<div class="news-card">',
-            unsafe_allow_html=True
-        )
 
         st.markdown(
             f'<div class="news-game">'
@@ -1757,10 +1667,7 @@ def show_news():
             unsafe_allow_html=True
         )
 
-        st.markdown(
-            "</div>",
-            unsafe_allow_html=True
-        )
+        st.write("")
 
         st.link_button(
             "READ MORE",
@@ -1768,14 +1675,17 @@ def show_news():
             use_container_width=True
         )
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            '<div class="home-divider"></div>',
+            unsafe_allow_html=True
+        )
 
 
 # ============================================================
-# PLAYER PROFILES PAGE
+# PLAYER PROFILES
 # ============================================================
 
-def show_profiles():
+elif st.session_state.page == "👤 Player Profiles":
 
     st.markdown(
         '<div class="page-title-profiles">'
@@ -1785,67 +1695,34 @@ def show_profiles():
     )
 
     st.markdown(
-        '<div class="game-card-description">'
-        'Gaming community profiles on CLARIX.'
+        '<div style="color:#ff4fd8; '
+        'font-family:Rajdhani; '
+        'font-size:17px; '
+        'margin-top:5px;">'
+        'COMPETITIVE GAMING COMMUNITY'
         '</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.write("")
 
-    profiles = [
-        ("FadingLyfe", "Competitive Gamer"),
-        ("ᴮᴼᴳPookie Poke", "Gaming Community"),
-        ("Crackedv2x ttv", "Competitive Gamer"),
-        ("KiLLeR_VaLDee", "Multiplayer Gamer")
-    ]
-
-    for name, role in profiles:
+    for rank, player in leaderboard:
 
         st.markdown(
-            f"""
-            <div class="profile-card">
-                <div class="profile-name">{name}</div>
-                <div class="profile-info">
-                    {role}
-                </div>
-            </div>
-            """,
+            f'<div class="profile-name">'
+            f'{player}'
+            f'</div>',
             unsafe_allow_html=True
         )
 
+        st.markdown(
+            f'<div class="profile-rank">'
+            f'FORTNITE RANKED POSITION: #{rank}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
-# ============================================================
-# DASHBOARD NAVIGATION
-# ============================================================
-
-if st.session_state.dashboard_navigation:
-
-    page = st.session_state.dashboard_navigation
-
-    st.session_state.dashboard_navigation = None
-
-
-# ============================================================
-# PAGE ROUTING
-# ============================================================
-
-if page == "🏠 Home":
-
-    show_home()
-
-elif page == "🎮 Games":
-
-    show_games()
-
-elif page == "🏆 Leaderboard":
-
-    show_leaderboard()
-
-elif page == "📰 Gaming News":
-
-    show_news()
-
-elif page == "👤 Player Profiles":
-
-    show_profiles()
+        st.markdown(
+            '<div class="home-divider"></div>',
+            unsafe_allow_html=True
+        )
